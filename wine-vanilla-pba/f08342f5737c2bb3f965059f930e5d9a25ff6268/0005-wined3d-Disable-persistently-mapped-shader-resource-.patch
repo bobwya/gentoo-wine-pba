@@ -1,0 +1,29 @@
+From eaff87735a5c9fd70470c9b4ed7c0245e2b5b373 Mon Sep 17 00:00:00 2001
+From: Andrew Comminos <andrew@comminos.com>
+Date: Thu, 8 Mar 2018 22:00:33 -0800
+Subject: [PATCH 05/11] wined3d: Disable persistently mapped shader resource
+ buffers.
+
+Signed-off-by: Rob Walker <bob.mt.wya@gmail.com>
+---
+ dlls/wined3d/buffer.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/dlls/wined3d/buffer.c b/dlls/wined3d/buffer.c
+index fb72b0f807..e939851e5a 100644
+--- a/dlls/wined3d/buffer.c
++++ b/dlls/wined3d/buffer.c
+@@ -1579,6 +1579,10 @@ static HRESULT buffer_init(struct wined3d_buffer *buffer, struct wined3d_device
+         {
+             WARN_(d3d_perf)("Not creating a persistent mapping for a dynamic buffer because ARB_buffer_storage is unsupported.\n");
+         }
++        else if (bind_flags & WINED3D_BIND_SHADER_RESOURCE)
++        {
++            FIXME_(d3d_perf)("Not using a persistent mapping for shader resource buffer %p (unimplemented)\n", buffer);
++        }
+         else
+         {
+             // If supported, use persistent mapped buffers instead of a
+-- 
+2.19.1
+
