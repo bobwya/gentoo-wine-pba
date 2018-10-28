@@ -205,7 +205,7 @@ index bf1486b8c1..4a4f23b878 100644
  
      count = ++buffer_gl->b.resource.map_count;
  
-+    if (buffer->locations & WINED3D_LOCATION_PERSISTENT_MAP)
++    if (buffer_gl->b.locations & WINED3D_LOCATION_PERSISTENT_MAP)
 +    {
 +        const struct wined3d_gl_info *gl_info;
 +        context = context_acquire(device, NULL, 0);

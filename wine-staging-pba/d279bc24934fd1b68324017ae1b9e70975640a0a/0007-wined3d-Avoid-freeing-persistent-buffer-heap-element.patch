@@ -68,7 +68,7 @@ index edc4fb8e8e..d710abe57b 100644
          return WINED3D_LOCATION_PERSISTENT_MAP;
      }
      if (locations & WINED3D_LOCATION_SYSMEM)
-@@ -1119,7 +1119,7 @@ static HRESULT wined3d_buffer_map(struct wined3d_buffer *buffer, UINT offset, UI
+@@ -1119,7 +1119,7 @@ static HRESULT wined3d_buffer_gl_map(struct wined3d_buffer_gl *buffer_gl,
          gl_info->gl_ops.gl.p_glFinish();
  
          base = buffer_gl->b.buffer_heap->map_ptr
