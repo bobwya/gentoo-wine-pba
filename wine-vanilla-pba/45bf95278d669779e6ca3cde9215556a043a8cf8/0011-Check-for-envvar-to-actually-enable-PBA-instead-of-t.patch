@@ -1,0 +1,39 @@
+From 32e377986e05485950248c05f6ad2532a783ea89 Mon Sep 17 00:00:00 2001
+From: Tk-Glitch <ti3nou@gmail.com>
+Date: Fri, 14 Sep 2018 01:03:27 +0200
+Subject: [PATCH 11/11] Check for envvar to actually enable PBA instead of the
+ opposite
+
+Signed-off-by: Rob Walker <bob.mt.wya@gmail.com>
+---
+ dlls/wined3d/device.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/dlls/wined3d/device.c b/dlls/wined3d/device.c
+index 342925e29b5..0baebee1dec 100644
+--- a/dlls/wined3d/device.c
++++ b/dlls/wined3d/device.c
+@@ -847,3 +847,3 @@ static void create_buffer_heap(struct wined3d_device *device, struct wined3d_con
+     BOOL use_pba = FALSE;
+-    char *env_pba_disable;
++    char *env_pba_enable;
+ 
+@@ -853,7 +853,3 @@ static void create_buffer_heap(struct wined3d_device *device, struct wined3d_con
+     }
+-    else if ((env_pba_disable = getenv("PBA_DISABLE")) && *env_pba_disable != '0')
+-    {
+-        FIXME("Not using PBA, envvar 'PBA_DISABLE' set.\n");
+-    }
+-    else
++    else if ((env_pba_enable = getenv("PBA_ENABLE")) && *env_pba_enable != '0')
+     {
+@@ -931,2 +927,6 @@ static void create_buffer_heap(struct wined3d_device *device, struct wined3d_con
+     }
++    else
++    {
++        FIXME("Not using PBA, envvar 'PBA_ENABLE' not set.\n");
++    }
+ 
+-- 
+2.19.1
+
