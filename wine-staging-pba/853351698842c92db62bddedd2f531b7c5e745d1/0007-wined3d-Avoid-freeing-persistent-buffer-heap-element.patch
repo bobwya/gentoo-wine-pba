@@ -20,7 +20,7 @@ diff --git a/dlls/wined3d/buffer.c b/dlls/wined3d/buffer.c
 index edc4fb8e8e..d710abe57b 100644
 --- a/dlls/wined3d/buffer.c
 +++ b/dlls/wined3d/buffer.c
-@@ -276,7 +276,7 @@ static BOOL buffer_alloc_persistent_map(struct wined3d_buffer *buffer)
+@@ -279,7 +279,7 @@ static BOOL buffer_alloc_persistent_map(struct wined3d_buffer *buffer)
  {
      struct wined3d_device *device = buffer->resource.device;
      struct wined3d_buffer_heap *heap;
@@ -29,7 +29,7 @@ index edc4fb8e8e..d710abe57b 100644
      HRESULT hr;
  
      if (buffer->bind_flags & WINED3D_BIND_CONSTANT_BUFFER)
-@@ -292,12 +292,12 @@ static BOOL buffer_alloc_persistent_map(struct wined3d_buffer *buffer)
+@@ -295,12 +295,12 @@ static BOOL buffer_alloc_persistent_map(struct wined3d_buffer *buffer)
      }
  
      buffer->buffer_heap = heap;
@@ -45,7 +45,7 @@ index edc4fb8e8e..d710abe57b 100644
      return TRUE;
  
  fail:
-@@ -750,7 +750,7 @@ BOOL wined3d_buffer_load_location(struct wined3d_buffer *buffer,
+@@ -756,7 +756,7 @@ BOOL wined3d_buffer_load_location(struct wined3d_buffer *buffer,
              if (buffer->conversion_map)
                  FIXME("Attempting to use conversion map with persistent mapping.\n");
              memcpy(buffer->buffer_heap->map_ptr +
@@ -54,7 +54,7 @@ index edc4fb8e8e..d710abe57b 100644
                     buffer->resource.heap_memory, buffer->resource.size);
              break;
  
-@@ -798,11 +798,11 @@ DWORD wined3d_buffer_get_memory(struct wined3d_buffer *buffer,
+@@ -804,11 +804,11 @@ DWORD wined3d_buffer_get_memory(struct wined3d_buffer *buffer,
      {
          // FIXME(acomminos): should we expose a buffer object we don't wholly own here?
          data->buffer_object = buffer->buffer_heap->buffer_object;
@@ -68,7 +68,7 @@ index edc4fb8e8e..d710abe57b 100644
          return WINED3D_LOCATION_PERSISTENT_MAP;
      }
      if (locations & WINED3D_LOCATION_SYSMEM)
-@@ -1119,7 +1119,7 @@ static HRESULT wined3d_buffer_gl_map(struct wined3d_buffer_gl *buffer_gl,
+@@ -1131,7 +1131,7 @@ static HRESULT wined3d_buffer_gl_map(struct wined3d_buffer_gl *buffer_gl,
          gl_info->gl_ops.gl.p_glFinish();
  
          base = buffer_gl->b.buffer_heap->map_ptr
@@ -77,43 +77,29 @@ index edc4fb8e8e..d710abe57b 100644
          *data = base + offset;
  
          context_release(context);
-@@ -1407,22 +1407,21 @@ static HRESULT buffer_resource_sub_resource_map(struct wined3d_resource *resourc
-         if (flags & WINED3D_MAP_DISCARD)
-         {
-             HRESULT hr;
+@@ -1446,2 +1446,2 @@ static HRESULT buffer_resource_sub_resource_map(struct wined3d_resource *resourc
 -            struct wined3d_map_range map_range;
 -            if (FAILED(hr = wined3d_buffer_heap_alloc(buffer->buffer_heap, resource->size, &map_range)))
 +            struct wined3d_buffer_heap_element *mt_elem;
 +            if (FAILED(hr = wined3d_buffer_heap_alloc(buffer->buffer_heap, resource->size, &mt_elem)))
-             {
-                 FIXME_(d3d_perf)("Failed to allocate new buffer, falling back to sync path.\n");
-                 return hr;
-             }
+@@ -1452,4 +1452,4 @@ static HRESULT buffer_resource_sub_resource_map(struct wined3d_resource *resourc
 -            map_desc->data = buffer->buffer_heap->map_ptr + map_range.offset + offset;
 +            map_desc->data = buffer->buffer_heap->map_ptr + mt_elem->range.offset + offset;
              resource->map_count++;
  
 -            buffer->mt_persistent_map = map_range;
 +            buffer->mt_persistent_map = mt_elem;
- 
-             // Discard handler on CSMT thread is responsible for returning the
-             // currently used buffer to the free pool, along with the fence that
+@@ -1459,3 +1459,3 @@ static HRESULT buffer_resource_sub_resource_map(struct wined3d_resource *resourc
              // must be called before the buffer can be reused.
 -            wined3d_cs_emit_discard_buffer(resource->device->cs, buffer, map_range);
--
 +            wined3d_cs_emit_discard_buffer(resource->device->cs, buffer, mt_elem);
              return WINED3D_OK;
-         }
-         else if (flags & WINED3D_MAP_NOOVERWRITE)
-@@ -1430,7 +1429,7 @@ static HRESULT buffer_resource_sub_resource_map(struct wined3d_resource *resourc
-             // Allow immediate access for persistent buffers without a fence.
-             // Always use the latest buffer in this case in case the latest
+@@ -1467,4 +1467,4 @@ static HRESULT buffer_resource_sub_resource_map(struct wined3d_resource *resourc
              // DISCARDed one hasn't reached the command stream yet.
 -            struct wined3d_map_range map_range = buffer->mt_persistent_map;
 +            struct wined3d_map_range map_range = buffer->mt_persistent_map->range;
              map_desc->data = buffer->buffer_heap->map_ptr + map_range.offset + offset;
              resource->map_count++;
- 
 diff --git a/dlls/wined3d/buffer_heap.c b/dlls/wined3d/buffer_heap.c
 index 75f84b0088..80670c515f 100644
 --- a/dlls/wined3d/buffer_heap.c

@@ -175,15 +175,15 @@ index bf1486b8c1..4a4f23b878 100644
      resource_unload(resource);
  }
  
-@@ -786,6 +870,8 @@ static void wined3d_buffer_destroy_object(void *object)
-         heap_free(buffer_gl->b.conversion_map);
+@@ -786,4 +870,8 @@ static void wined3d_buffer_destroy_object(void *object)
      }
  
++    struct wined3d_buffer *buffer;
++    buffer = &buffer_gl->b;
 +    buffer_free_persistent_map(buffer);
 +
      heap_free(buffer_gl->b.maps);
      heap_free(buffer_gl);
- }
 @@ -897,6 +988,16 @@ void wined3d_buffer_load(struct wined3d_buffer *buffer, struct wined3d_context *
  
      buffer_mark_used(buffer);
@@ -240,12 +240,14 @@ index bf1486b8c1..4a4f23b878 100644
      if (buffer_gl->b.map_ptr)
      {
          struct wined3d_device *device = buffer_gl->b.resource.device;
-@@ -1280,6 +1377,64 @@ static void buffer_resource_preload(struct wined3d_resource *resource)
+@@ -1280,6 +1377,66 @@ static void buffer_resource_preload(struct wined3d_resource *resource)
  
  static HRESULT buffer_resource_sub_resource_map(struct wined3d_resource *resource, unsigned int sub_resource_idx,
          struct wined3d_map_desc *map_desc, const struct wined3d_box *box, DWORD flags)
 +{
-+    struct wined3d_buffer *buffer = buffer_from_resource(resource);
++    struct wined3d_buffer_gl *buffer_gl = wined3d_buffer_gl(buffer_from_resource(resource));
++    struct wined3d_buffer *buffer = &(buffer_gl->b);
++    struct wined3d_buffer_desc *desc = &(buffer_gl->b.desc);
 +    UINT offset = box ? box->left : 0;
 +
 +    if (sub_resource_idx)
@@ -258,7 +260,7 @@ index bf1486b8c1..4a4f23b878 100644
 +    // which require no GL calls to interface with.
 +    if (buffer->locations & WINED3D_LOCATION_PERSISTENT_MAP)
 +    {
-+        map_desc->row_pitch = map_desc->slice_pitch = buffer->desc.byte_width;
++        map_desc->row_pitch = map_desc->slice_pitch = desc->byte_width;
 +        if (flags & WINED3D_MAP_DISCARD)
 +        {
 +            HRESULT hr;
@@ -543,8 +545,8 @@ index 1bd38632b8..07d8d69083 100644
          struct wined3d_buffer_gl *ib = wined3d_buffer_gl(state->index_buffer);
 -        GL_EXTCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->buffer_object));
 +        // FIXME(acomminos): disasterous.
-+        if (ib->locations & WINED3D_LOCATION_PERSISTENT_MAP)
-+            GL_EXTCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->buffer_heap->buffer_object));
++        if (ib->b.locations & WINED3D_LOCATION_PERSISTENT_MAP)
++            GL_EXTCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->b.buffer_heap->buffer_object));
 +        else
 +            GL_EXTCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->buffer_object));
      }
