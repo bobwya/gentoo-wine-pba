@@ -15,7 +15,7 @@ index ef11f0eaa18..7d83c943464 100644
 +++ b/dlls/wined3d/buffer.c
 @@ -1611,2 +1611,6 @@ static HRESULT wined3d_buffer_init(struct wined3d_buffer *buffer, struct wined3d
          }
-+        else if (buffer->bind_flags & WINED3D_BIND_SHADER_RESOURCE)
++        else if (desc->bind_flags & WINED3D_BIND_SHADER_RESOURCE)
 +        {
 +            FIXME_(d3d_perf)("Not using a persistent mapping for shader resource buffer %p (unimplemented)\n", buffer);
 +        }

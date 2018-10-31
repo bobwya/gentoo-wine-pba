@@ -28,12 +28,13 @@ index 58e56857b4c..ef11f0eaa18 100644
  #define WINED3D_BUFFER_APPLESYNC    0x10    /* Using sync as in GL_APPLE_flush_buffer_range. */
 +#define WINED3D_BUFFER_PERSISTENT   0x20    /* Uses a persistent-mapped buffer via ARB_buffer_storage. */
  
-@@ -274,2 +276,48 @@ fail:
+@@ -274,2 +276,49 @@ fail:
  
 +/* Context activation is done by the caller. */
 +static BOOL buffer_alloc_persistent_map(struct wined3d_buffer *buffer, struct wined3d_context *context)
 +{
-+    struct wined3d_device *device = buffer->resource.device;
++    struct wined3d_resource *resource = &buffer->resource;
++    struct wined3d_device *device = resource->device;
 +    struct wined3d_buffer_heap *heap;
 +    struct wined3d_map_range map_range;
 +    HRESULT hr;
@@ -45,13 +46,13 @@ index 58e56857b4c..ef11f0eaa18 100644
 +    }
 +    else
 +    {
-+        if (!(buffer->resource.usage & WINED3DUSAGE_WRITEONLY))
++        if (!(resource->usage & WINED3DUSAGE_WRITEONLY))
 +            FIXME("Using a write-only persistent buffer for %p without WINED3DUSAGE_WRITEONLY.\n", buffer);
 +        heap = device->wo_buffer_heap;
 +    }
 +
 +    buffer->buffer_heap = heap;
-+    if (FAILED(hr = wined3d_buffer_heap_alloc(heap, buffer->resource.size, &map_range)))
++    if (FAILED(hr = wined3d_buffer_heap_alloc(heap, resource->size, &map_range)))
 +    {
 +        goto fail;
 +    }
@@ -144,8 +145,10 @@ index 58e56857b4c..ef11f0eaa18 100644
 +    buffer_free_persistent_map(buffer);
 +
      resource_unload(resource);
-@@ -788,2 +878,4 @@ static void wined3d_buffer_gl_destroy_object(void *object)
+@@ -788,2 +878,6 @@ static void wined3d_buffer_gl_destroy_object(void *object)
  
++    struct wined3d_buffer *buffer;
++    buffer = &buffer_gl->b;
 +    buffer_free_persistent_map(buffer);
 +
      heap_free(buffer_gl->b.maps);
@@ -193,10 +196,11 @@ index 58e56857b4c..ef11f0eaa18 100644
 +    }
 +
      if (buffer_gl->b.map_ptr)
-@@ -1284,2 +1411,60 @@ static HRESULT buffer_resource_sub_resource_map(struct wined3d_resource *resourc
+@@ -1284,2 +1411,61 @@ static HRESULT buffer_resource_sub_resource_map(struct wined3d_resource *resourc
          struct wined3d_map_desc *map_desc, const struct wined3d_box *box, DWORD flags)
 +{
-+    struct wined3d_buffer *buffer = buffer_from_resource(resource);
++    struct wined3d_buffer_gl *buffer_gl = wined3d_buffer_gl(buffer_from_resource(resource));
++    struct wined3d_buffer *buffer = &(buffer_gl->b);
 +    UINT offset = box ? box->left : 0;
 +
 +    if (sub_resource_idx)
@@ -437,8 +441,8 @@ index ab67c578901..3d2608d96f3 100644
          struct wined3d_buffer_gl *ib = wined3d_buffer_gl(state->index_buffer);
 -        GL_EXTCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->buffer_object));
 +        // FIXME(acomminos): disasterous.
-+        if (ib->locations & WINED3D_LOCATION_PERSISTENT_MAP)
-+            GL_EXTCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->buffer_heap->buffer_object));
++        if (ib->b.locations & WINED3D_LOCATION_PERSISTENT_MAP)
++            GL_EXTCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->b.buffer_heap->buffer_object));
 +        else
 +            GL_EXTCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->buffer_object));
      }

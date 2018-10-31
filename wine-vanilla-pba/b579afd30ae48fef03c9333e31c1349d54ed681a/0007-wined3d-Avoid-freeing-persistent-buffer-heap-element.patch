@@ -27,8 +27,8 @@ index d038885cc1d..5e3df085a19 100644
      HRESULT hr;
 @@ -297,3 +297,3 @@ static BOOL buffer_alloc_persistent_map(struct wined3d_buffer *buffer)
      buffer->buffer_heap = heap;
--    if (FAILED(hr = wined3d_buffer_heap_alloc(heap, buffer->resource.size, &map_range)))
-+    if (FAILED(hr = wined3d_buffer_heap_alloc(heap, buffer->resource.size, &elem)))
+-    if (FAILED(hr = wined3d_buffer_heap_alloc(heap, resource->size, &map_range)))
++    if (FAILED(hr = wined3d_buffer_heap_alloc(heap, resource->size, &elem)))
      {
 @@ -301,4 +301,4 @@ static BOOL buffer_alloc_persistent_map(struct wined3d_buffer *buffer)
      }
