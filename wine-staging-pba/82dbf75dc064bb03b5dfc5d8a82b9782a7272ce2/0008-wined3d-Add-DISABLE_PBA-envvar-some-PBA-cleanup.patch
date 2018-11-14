@@ -26,7 +26,7 @@ index d710abe57b..e31c14541b 100644
 -            WARN_(d3d_perf)("Not creating a persistent mapping for a dynamic buffer because ARB_buffer_storage is unsupported.\n");
 +            WARN_(d3d_perf)("Not creating a persistent mapping for dynamic buffer %p because the PBA is disabled.\n", buffer);
          }
-         else if (bind_flags & WINED3D_BIND_SHADER_RESOURCE)
+         else if (buffer->bind_flags & WINED3D_BIND_SHADER_RESOURCE)
          {
 diff --git a/dlls/wined3d/buffer_heap.c b/dlls/wined3d/buffer_heap.c
 index 80670c515f..899aad9612 100644
