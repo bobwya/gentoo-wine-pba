@@ -630,7 +630,7 @@ index d8a813858b..bc8ba6e708 100644
 +++ b/dlls/wined3d/wined3d_private.h
 @@ -1468,6 +1468,7 @@ struct wined3d_bo_address
  {
-     GLuint buffer_object;
+     UINT_PTR buffer_object;
      BYTE *addr;
 +    GLsizeiptr length;
  };
