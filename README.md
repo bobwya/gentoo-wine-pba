@@ -8,15 +8,15 @@ A rudimentary hack is applied to maintain support, for **wine-pba**, for Wine ve
 
 ## ```wine-staging-pba/```
 
-Contains wine-pba patchsets, rebased for Wine Staging, seperated into directories by Wine Git commits. The patches have been split into a per-file patch (so they can be applied in any order) and duplicate patches are hard-linked to each other (to reduce the archive size).
+Contains **wine-pba** patchsets, rebased for Wine Staging, seperated into directories by Wine Git commits. The patches have been split into a per-file patch (so they can be applied in any order) and duplicate patches are hard-linked to each other (to reduce the archive size).
 
-These rebased wine-pba patchsets are guaranteed to apply to all child Wine Git commits, on which Wine Staging has been rebased. When a subsequent wine-pba rebase snapshot is necessary, then a new patchset directory is created for this (and so on).
+These rebased **wine-pba** patchsets are guaranteed to apply to all child Wine Git commits, on which Wine Staging has been rebased. When a subsequent **wine-pba** rebase snapshot is necessary, then a new patchset directory is created for this (and so on).
 
 ## ```wine-vanilla-pba/```
 
-Contains wine-pba patchsets, rebased for Wine, seperated into directories by Wine Git commits.  The patches have been split into a per-file patch (so they can be applied in any order) and duplicate patches are hard-linked to each other (to reduce the archive size).
+Contains **wine-pba** patchsets, rebased for Wine, seperated into directories by Wine Git commits.  The patches have been split into a per-file patch (so they can be applied in any order) and duplicate patches are hard-linked to each other (to reduce the archive size).
 
-These rebased wine-pba patchsets are guaranteed to apply to all child Wine Git commits. When a subsequent wine-pba rebase snapshot is necessary, then a new patchset directory is created for this (and so on).
+These rebased **wine-pba** patchsets are guaranteed to apply to all child Wine Git commits. When a subsequent **wine-pba** rebase snapshot is necessary, then a new patchset directory is created for this (and so on).
 
 # wine-pba
 
