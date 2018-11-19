@@ -1,0 +1,14 @@
+diff --git a/dlls/wined3d/query.c b/dlls/wined3d/query.c
+index 26c32b1f13b..398657108c7 100644
+--- a/dlls/wined3d/query.c
++++ b/dlls/wined3d/query.c
+@@ -82,6 +82,9 @@ static BOOL wined3d_query_buffer_queue_result(struct wined3d_context *context, s
+     /* Don't use query buffers without CSMT, mainly for simplicity. */
+     if (!context->device->cs->thread)
+         return FALSE;
++    /* Don't use query buffers with PBA, causing severe rendering errors. */
++    if (query->device->use_pba)
++        return FALSE;
+ 
+     if (query->buffer_object)
+     {

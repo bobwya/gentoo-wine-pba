@@ -1,0 +1,12 @@
+diff --git a/dlls/wined3d/Makefile.in b/dlls/wined3d/Makefile.in
+index edee58845aa..9d2acb5be37 100644
+--- a/dlls/wined3d/Makefile.in
++++ b/dlls/wined3d/Makefile.in
+@@ -6,6 +6,7 @@ C_SRCS = \
+ 	arb_program_shader.c \
+ 	ati_fragment_shader.c \
+ 	buffer.c \
++	buffer_heap.c \
+ 	context.c \
+ 	cs.c \
+ 	device.c \

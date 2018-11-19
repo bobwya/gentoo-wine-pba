@@ -1,0 +1,17 @@
+diff --git a/dlls/wined3d/context.c b/dlls/wined3d/context.c
+index 6bd420ace98..99af86fb196 100644
+--- a/dlls/wined3d/context.c
++++ b/dlls/wined3d/context.c
+@@ -5006,7 +5006,11 @@ void draw_primitive(struct wined3d_device *device, const struct wined3d_state *s
+     if (parameters->indexed)
+     {
+         struct wined3d_buffer *index_buffer = state->index_buffer;
+-        if (!wined3d_buffer_gl(index_buffer)->buffer_object || !stream_info->all_vbo)
++        if (index_buffer->cs_persistent_map)
++        {
++            idx_data = index_buffer->cs_persistent_map->range.offset;
++        }
++        else if (!wined3d_buffer_gl(index_buffer)->buffer_object || !stream_info->all_vbo)
+         {
+             idx_data = index_buffer->resource.heap_memory;
+         }
